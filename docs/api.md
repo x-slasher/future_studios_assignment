@@ -70,7 +70,7 @@ Accept: application/json
 201 Created
 {
   "data": {
-    "token": "4|Hu1GPwTOXbUkAbW5km3uXtV8KkDXLPh9GQrruBJUb6ed0a9e",
+    "token": "1|example-token",
     "user": {
       "id": "01m3yq2m67tyfq22zt14a0ymyq", "name": "Rahim Uddin", "email": "rahim@rahimtraders.test",
       "role": "owner", "is_active": true, "last_login_at": null, "created_at": "2026-10-02T16:27:37Z",
@@ -101,7 +101,7 @@ POST /api/v1/auth/login
 200 OK
 {
   "data": {
-    "token": "5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0",
+    "token": "1|example-token",
     "user": {
       "id": "01m3ypws7j18e4984mfb5kkz73", "name": "Acme Ltd Owner", "email": "owner@acme.test", "role": "owner",
       "is_active": true, "last_login_at": "2026-10-02T16:27:37Z", "created_at": "2026-10-02T16:24:25Z",
@@ -115,7 +115,7 @@ POST /api/v1/auth/login
 
 ```http
 POST /api/v1/customers
-Authorization: Bearer 5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0
+Authorization: Bearer 1|example-token
 
 { "name": "Karim Store", "email": "karim@store.test", "phone": "+8801700000000", "company_name": "Karim Ltd" }
 ```
@@ -136,7 +136,7 @@ Authorization: Bearer 5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0
 
 ```http
 GET /api/v1/customers?filter[status]=active&filter[search]=customer1&filter[created_from]=2026-09-01&sort=name&per_page=2
-Authorization: Bearer 5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0
+Authorization: Bearer 1|example-token
 ```
 
 ```json

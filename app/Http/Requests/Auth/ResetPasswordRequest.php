@@ -30,7 +30,7 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'email' => ['description' => 'Account email.', 'example' => 'owner@acme.test'],
-            'token' => ['description' => 'The token from the set-password email.', 'example' => 'b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0'],
+            'token' => ['description' => 'The token from the set-password email.', 'example' => 'token-from-the-email'],
             'password' => ['description' => 'The new password. At least 8 characters.', 'example' => 'NewSecret123'],
             'password_confirmation' => ['description' => 'Must match password.', 'example' => 'NewSecret123'],
         ];

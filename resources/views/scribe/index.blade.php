@@ -309,7 +309,7 @@ Unknown sort fields or filter keys return `422 VALIDATION_FAILED`.</code></pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;token&quot;: &quot;4|Hu1GPwTOXbUkAbW5km3uXtV8KkDXLPh9GQrruBJUb6ed0a9e&quot;,
+        &quot;token&quot;: &quot;1|example-token&quot;,
         &quot;user&quot;: {
             &quot;id&quot;: &quot;01m3yq2m67tyfq22zt14a0ymyq&quot;,
             &quot;name&quot;: &quot;Rahim Uddin&quot;,
@@ -578,7 +578,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;token&quot;: &quot;5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0&quot;,
+        &quot;token&quot;: &quot;1|example-token&quot;,
         &quot;user&quot;: {
             &quot;id&quot;: &quot;01m3ypws7j18e4984mfb5kkz73&quot;,
             &quot;name&quot;: &quot;Acme Ltd Owner&quot;,
@@ -922,7 +922,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"email\": \"owner@acme.test\",
-    \"token\": \"b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\",
+    \"token\": \"token-from-the-email\",
     \"password\": \"NewSecret123\"
 }"
 </code></pre></div>
@@ -1063,10 +1063,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="token"                data-endpoint="POSTapi-v1-auth-reset-password"
-               value="b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+               value="token-from-the-email"
                data-component="body">
     <br>
-<p>The token from the set-password email. Example: <code>b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0</code></p>
+<p>The token from the set-password email. Example: <code>token-from-the-email</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;

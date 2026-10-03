@@ -59,7 +59,7 @@ paths:
                 type: object
                 example:
                   data:
-                    token: 4|Hu1GPwTOXbUkAbW5km3uXtV8KkDXLPh9GQrruBJUb6ed0a9e
+                    token: 1|example-token
                     user:
                       id: 01m3yq2m67tyfq22zt14a0ymyq
                       name: 'Rahim Uddin'
@@ -120,7 +120,7 @@ paths:
                     properties:
                       token:
                         type: string
-                        example: 4|Hu1GPwTOXbUkAbW5km3uXtV8KkDXLPh9GQrruBJUb6ed0a9e
+                        example: 1|example-token
                       user:
                         type: object
                         properties:
@@ -375,7 +375,7 @@ paths:
                 type: object
                 example:
                   data:
-                    token: 5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0
+                    token: 1|example-token
                     user:
                       id: 01m3ypws7j18e4984mfb5kkz73
                       name: 'Acme Ltd Owner'
@@ -395,7 +395,7 @@ paths:
                     properties:
                       token:
                         type: string
-                        example: 5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0
+                        example: 1|example-token
                       user:
                         type: object
                         properties:
@@ -750,7 +750,7 @@ paths:
                 token:
                   type: string
                   description: 'The token from the set-password email.'
-                  example: b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0
+                  example: token-from-the-email
                 password:
                   type: string
                   description: 'The new password. At least 8 characters.'

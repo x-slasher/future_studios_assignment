@@ -1,0 +1,6 @@
+*
+!.gitignore
+# Scribe serves /docs.postman and /docs.openapi from here, so the generated files are committed.
+!scribe/
+!scribe/collection.json
+!scribe/openapi.yaml

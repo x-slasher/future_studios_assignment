@@ -1,0 +1,2490 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "http:\/\/localhost:8000"
+        }
+    ],
+    "info": {
+        "name": "SaaS API Documentation",
+        "_postman_id": "8596ab83-3574-4a05-bf54-3c3b72b95aa7",
+        "description": "Multi-tenant SaaS backend: companies, their users and customers, subscription plans with feature limits, and usage analytics.",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "description": "\nRegistration, login, and passwords.",
+            "item": [
+                {
+                    "name": "Register a company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/register",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/register"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"company_name\":\"Rahim Traders\",\"name\":\"Rahim Uddin\",\"email\":\"rahim@rahimtraders.test\",\"password\":\"Secret123\",\"plan_code\":\"starter\"}"
+                        },
+                        "description": "Creates the company, its owner, and a subscription in one transaction, then returns a token so the client is logged in at once. A paid plan starts a 14-day trial; free starts active with no period. The owner gets a welcome email.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"data\": {\"token\": \"4|Hu1GPwTOXbUkAbW5km3uXtV8KkDXLPh9GQrruBJUb6ed0a9e\", \"user\": {\"id\": \"01m3yq2m67tyfq22zt14a0ymyq\", \"name\": \"Rahim Uddin\", \"email\": \"rahim@rahimtraders.test\", \"role\": \"owner\", \"is_active\": true, \"last_login_at\": null, \"created_at\": \"2026-10-02T16:27:37Z\", \"tenant\": {\"id\": \"01m3yq2kzkqwbq7wbddstwev0v\", \"name\": \"Rahim Traders\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:27:36Z\"}}, \"tenant\": {\"id\": \"01m3yq2kzkqwbq7wbddstwev0v\", \"name\": \"Rahim Traders\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:27:36Z\"}, \"subscription\": {\"id\": \"01m3yq2m6ch3k7tjxzbr2528rx\", \"status\": \"trialing\", \"plan\": {\"id\": \"01m3ypwrg7s3rw8thb4tw1226n\", \"code\": \"starter\", \"name\": \"Starter\", \"price_cents\": 1900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 5}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 500}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 120}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": false, \"limit\": null}]}, \"trial_ends_at\": \"2026-10-16T16:27:37Z\", \"current_period_start\": null, \"current_period_end\": null, \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email has already been taken.\"], \"plan_code\": [\"The selected plan code is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Log in",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/login",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/login"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"owner@acme.test\",\"password\":\"password\"}"
+                        },
+                        "description": "Returns a token named \"api\" that expires after 7 days. Unknown email, wrong password, and inactive user all return the same 401.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"token\": \"5|SfKJB3rWYYrWWSjtZ8qr7QPPdNMRGuW9A96pMiRj2eb2a6f0\", \"user\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\", \"email\": \"owner@acme.test\", \"role\": \"owner\", \"is_active\": true, \"last_login_at\": \"2026-10-02T16:27:37Z\", \"created_at\": \"2026-10-02T16:24:25Z\", \"tenant\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\"}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"INVALID_CREDENTIALS\", \"message\": \"These credentials do not match our records.\", \"details\": {}}}",
+                            "name": "Wrong email or password, or inactive user"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email field is required.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Send a set-password token",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/forgot-password",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/forgot-password"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"owner@acme.test\"}"
+                        },
+                        "description": "Emails a token for POST \/auth\/reset-password. Always returns 202, so the API never reveals which emails exist.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 202,
+                            "body": "{\"data\": {\"message\": \"If the email is registered, a reset token has been sent.\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email field must be a valid email address.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Set a new password",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/reset-password",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/reset-password"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"owner@acme.test\",\"token\":\"b6f1c0d2e3a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\",\"password\":\"NewSecret123\"}"
+                        },
+                        "description": "Uses the token from the forgot-password email or from the new-user invitation email.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"message\": \"Your password has been set.\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"token\": [\"This password reset token is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Log out",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/logout",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/logout"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Deletes only the token used for this request. Other devices stay logged in."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 204,
+                            "body": "\"\"",
+                            "name": "Logged out"
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Current user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/me",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/me"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Works for tenant users and platform admins. Returns the role, a company summary, and the permission list. A platform admin has no role, company, or permissions."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\", \"email\": \"owner@acme.test\", \"role\": \"owner\", \"is_active\": true, \"last_login_at\": \"2026-10-02T16:27:37Z\", \"created_at\": \"2026-10-02T16:24:25Z\", \"tenant\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\"}, \"permissions\": [\"tenant.view\", \"tenant.update\", \"users.view\", \"users.create\", \"users.update\", \"users.delete\", \"customers.view\", \"customers.create\", \"customers.update\", \"customers.delete\", \"customers.export\", \"subscription.view\", \"subscription.manage\", \"dashboard.view\"]}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Tenant",
+            "description": "\nYour company.",
+            "item": [
+                {
+                    "name": "Show your company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/tenant",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/tenant"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Needs the tenant.view permission."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Rename your company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/tenant",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/tenant"
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Acme Limited\"}"
+                        },
+                        "description": "Needs the tenant.update permission (owner only)."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Limited\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"name\": [\"The name field is required.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "description": "\nStaff users of your company.",
+            "item": [
+                {
+                    "name": "List users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number, from 1. Must be at least 1. Must not be greater than 1000000.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15",
+                                    "description": "Items per page, 1 to 100. Default 15. Must be at least 1. Must not be greater than 100.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "name",
+                                    "description": "-created_at (default) or name.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter[]",
+                                    "value": "",
+                                    "description": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter.role",
+                                    "value": "member",
+                                    "description": "owner, admin, or member.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.is_active",
+                                    "value": "1",
+                                    "description": "1, 0, true, or false.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.search",
+                                    "value": "kar",
+                                    "description": "Prefix match on name or email. Must not be greater than 100 characters.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/users?page=1&per_page=15&sort=name&filter%5B%5D=&filter.role=member&filter.is_active=1&filter.search=kar"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Your company users only. Needs users.view."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": [{\"id\": \"01m3ypwsxybe30vqk6h7k91gbr\", \"name\": \"Acme Member\", \"email\": \"member@acme.test\", \"role\": \"member\", \"is_active\": true, \"last_login_at\": null, \"created_at\": \"2026-10-02T16:24:26Z\"}], \"links\": {\"first\": \"http:\/\/localhost:8000\/api\/v1\/users?page=1\", \"last\": \"http:\/\/localhost:8000\/api\/v1\/users?page=14\", \"prev\": null, \"next\": \"http:\/\/localhost:8000\/api\/v1\/users?page=2\"}, \"meta\": {\"current_page\": 1, \"from\": 1, \"last_page\": 14, \"path\": \"http:\/\/localhost:8000\/api\/v1\/users\", \"per_page\": 15, \"to\": 15, \"total\": 200}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"sort\": [\"The selected sort is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Create a user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Karim Hossain\",\"email\":\"karim@acme.test\",\"role\":\"member\"}"
+                        },
+                        "description": "The user gets a random password and an email with a token to set their own. Counts against the plan max_users. Only an owner can assign the owner role."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"data\": {\"id\": \"01m3ypwsxybe30vqk6h7k91gbr\", \"name\": \"Acme Member\", \"email\": \"member@acme.test\", \"role\": \"member\", \"is_active\": true, \"last_login_at\": null, \"created_at\": \"2026-10-02T16:24:26Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"PLAN_LIMIT_EXCEEDED\", \"message\": \"Your plan allows 5 users. Upgrade your plan to add more.\", \"details\": {\"feature\": \"max_users\", \"limit\": 5, \"current\": 5}}}",
+                            "name": "Plan user limit reached"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email has already been taken.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Show a user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_ulid",
+                            "variable": [
+                                {
+                                    "id": "user_ulid",
+                                    "key": "user_ulid",
+                                    "value": "01m3yqq286vdt8z2xza0zrwkm5",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "A user from another company returns 404."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypwsxybe30vqk6h7k91gbr\", \"name\": \"Acme Member\", \"email\": \"member@acme.test\", \"role\": \"member\", \"is_active\": true, \"last_login_at\": null, \"created_at\": \"2026-10-02T16:24:26Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update a user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_ulid",
+                            "variable": [
+                                {
+                                    "id": "user_ulid",
+                                    "key": "user_ulid",
+                                    "value": "01m3yqq286vdt8z2xza0zrwkm5",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Karim Hossain\",\"role\":\"admin\",\"is_active\":true}"
+                        },
+                        "description": "An admin cannot change an owner. Deactivating revokes all the user tokens. The last active owner cannot be demoted or deactivated."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypwsxybe30vqk6h7k91gbr\", \"name\": \"Acme Member\", \"email\": \"member@acme.test\", \"role\": \"admin\", \"is_active\": true, \"last_login_at\": null, \"created_at\": \"2026-10-02T16:24:26Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"LAST_OWNER\", \"message\": \"A company must keep at least one active owner.\", \"details\": {}}}",
+                            "name": "Would leave the company without an owner"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"role\": [\"The selected role is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete a user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_ulid",
+                            "variable": [
+                                {
+                                    "id": "user_ulid",
+                                    "key": "user_ulid",
+                                    "value": "01m3yqq286vdt8z2xza0zrwkm5",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Soft delete. Revokes the user tokens. Nobody can delete themselves, and an admin cannot delete an owner."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 204,
+                            "body": "\"\"",
+                            "name": "Deleted"
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"LAST_OWNER\", \"message\": \"A company must keep at least one active owner.\", \"details\": {}}}",
+                            "name": "Would leave the company without an owner"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Customers",
+            "description": "\nYour company customers.",
+            "item": [
+                {
+                    "name": "List customers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers",
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number, from 1. Must be at least 1. Must not be greater than 1000000.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15",
+                                    "description": "Items per page, 1 to 100. Default 15. Must be at least 1. Must not be greater than 100.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "-created_at",
+                                    "description": "-created_at (default), created_at, name, or -name.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter[]",
+                                    "value": "",
+                                    "description": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter.status",
+                                    "value": "active",
+                                    "description": "active or inactive.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.search",
+                                    "value": "kar",
+                                    "description": "Prefix match on name or email. Must not be greater than 100 characters.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.created_from",
+                                    "value": "2026-09-01",
+                                    "description": "Created on or after this date (Y-m-d). Must be a valid date in the format Y-m-d.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.created_to",
+                                    "value": "2026-09-30",
+                                    "description": "Created on or before this date (Y-m-d). Must be a valid date in the format Y-m-d. Must be a date after or equal to filter.created_from.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers?page=1&per_page=15&sort=-created_at&filter%5B%5D=&filter.status=active&filter.search=kar&filter.created_from=2026-09-01&filter.created_to=2026-09-30"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Your company customers only. Needs customers.view."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": [{\"id\": \"01m3yq2mys56kee6prc9xsn2ac\", \"name\": \"Karim Store\", \"email\": \"karim@store.test\", \"phone\": \"+8801700000000\", \"company_name\": \"Karim Ltd\", \"status\": \"active\", \"created_by\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\"}, \"created_at\": \"2026-10-02T16:27:37Z\", \"updated_at\": \"2026-10-02T16:27:37Z\"}], \"links\": {\"first\": \"http:\/\/localhost:8000\/api\/v1\/customers?page=1\", \"last\": \"http:\/\/localhost:8000\/api\/v1\/customers?page=14\", \"prev\": null, \"next\": \"http:\/\/localhost:8000\/api\/v1\/customers?page=2\"}, \"meta\": {\"current_page\": 1, \"from\": 1, \"last_page\": 14, \"path\": \"http:\/\/localhost:8000\/api\/v1\/customers\", \"per_page\": 15, \"to\": 15, \"total\": 200}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"filter\": [\"The filter field must be an array with only the keys: status, search, created_from, created_to.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Create a customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Karim Store\",\"email\":\"karim@store.test\",\"phone\":\"+8801700000000\",\"company_name\":\"Karim Ltd\",\"status\":\"active\"}"
+                        },
+                        "description": "Counts against the plan max_customers. Any tenant_id in the body is ignored."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"data\": {\"id\": \"01m3yq2mys56kee6prc9xsn2ac\", \"name\": \"Karim Store\", \"email\": \"karim@store.test\", \"phone\": \"+8801700000000\", \"company_name\": \"Karim Ltd\", \"status\": \"active\", \"created_by\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\"}, \"created_at\": \"2026-10-02T16:27:37Z\", \"updated_at\": \"2026-10-02T16:27:37Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"PLAN_LIMIT_EXCEEDED\", \"message\": \"Your plan allows 500 customers. Upgrade your plan to add more.\", \"details\": {\"feature\": \"max_customers\", \"limit\": 500, \"current\": 500}}}",
+                            "name": "Plan customer limit reached"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email has already been taken.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Show a customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:customer_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:customer_ulid",
+                            "variable": [
+                                {
+                                    "id": "customer_ulid",
+                                    "key": "customer_ulid",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "A customer from another company returns 404."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3yq2mys56kee6prc9xsn2ac\", \"name\": \"Karim Store\", \"email\": \"karim@store.test\", \"phone\": \"+8801700000000\", \"company_name\": \"Karim Ltd\", \"status\": \"active\", \"created_by\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\"}, \"created_at\": \"2026-10-02T16:27:37Z\", \"updated_at\": \"2026-10-02T16:27:37Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update a customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:customer_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:customer_ulid",
+                            "variable": [
+                                {
+                                    "id": "customer_ulid",
+                                    "key": "customer_ulid",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Karim Store\",\"email\":\"karim@store.test\",\"phone\":\"+8801700000000\",\"company_name\":\"Karim Ltd\",\"status\":\"inactive\"}"
+                        },
+                        "description": "Send only the fields to change."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3yq2mys56kee6prc9xsn2ac\", \"name\": \"Karim Store\", \"email\": \"karim@store.test\", \"phone\": \"+8801700000000\", \"company_name\": \"Karim Ltd\", \"status\": \"inactive\", \"created_by\": {\"id\": \"01m3ypws7j18e4984mfb5kkz73\", \"name\": \"Acme Ltd Owner\"}, \"created_at\": \"2026-10-02T16:27:37Z\", \"updated_at\": \"2026-10-02T16:27:37Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"email\": [\"The email has already been taken.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete a customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:customer_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:customer_ulid",
+                            "variable": [
+                                {
+                                    "id": "customer_ulid",
+                                    "key": "customer_ulid",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Soft delete. The email can be used again. Needs customers.delete (members cannot)."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 204,
+                            "body": "\"\"",
+                            "name": "Deleted"
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Customer Exports",
+            "description": "\nAsynchronous CSV exports of customers.",
+            "item": [
+                {
+                    "name": "Request a CSV export",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/exports",
+                            "query": [
+                                {
+                                    "key": "filter[]",
+                                    "value": "",
+                                    "description": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter.status",
+                                    "value": "active",
+                                    "description": "",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.search",
+                                    "value": "b",
+                                    "description": "Must not be greater than 100 characters.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.created_from",
+                                    "value": "2026-10-02",
+                                    "description": "Must be a valid date in the format Y-m-d.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.created_to",
+                                    "value": "2052-10-25",
+                                    "description": "Must be a valid date in the format Y-m-d. Must be a date after or equal to filter.created_from.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/exports?filter%5B%5D=&filter.status=active&filter.search=b&filter.created_from=2026-10-02&filter.created_to=2052-10-25"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Takes the same filters as the customer list. A queued job builds the CSV; poll the export until download_url is set. Needs the customer_export plan feature and customers.export. Limited to 5 per hour per company."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 202,
+                            "body": "{\"data\": {\"id\": \"01m3yq2mzrzmdpxqgw955qbt99\", \"status\": \"pending\", \"row_count\": null, \"download_url\": null, \"error_message\": null, \"created_at\": \"2026-10-02T16:27:37Z\", \"completed_at\": null}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 402,
+                            "body": "{\"error\": {\"code\": \"SUBSCRIPTION_INACTIVE\", \"message\": \"Your subscription is not active. Renew it to make changes.\", \"details\": {}}}",
+                            "name": "Subscription not usable (writes only)"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FEATURE_NOT_AVAILABLE\", \"message\": \"Your plan does not include this feature. Upgrade your plan to use it.\", \"details\": {\"feature\": \"customer_export\"}}}",
+                            "name": "Plan has no customer export"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"filter.status\": [\"The selected filter.status is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Show an export",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/exports\/:export_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/exports\/:export_ulid",
+                            "variable": [
+                                {
+                                    "id": "export_ulid",
+                                    "key": "export_ulid",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "download_url is null until the status is completed."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3yq2mzrzmdpxqgw955qbt99\", \"status\": \"completed\", \"row_count\": 181, \"download_url\": \"http:\/\/localhost:8000\/api\/v1\/customers\/exports\/01m3yq2mzrzmdpxqgw955qbt99\/download\", \"error_message\": null, \"created_at\": \"2026-10-02T16:27:37Z\", \"completed_at\": \"2026-10-02T16:27:38Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FEATURE_NOT_AVAILABLE\", \"message\": \"Your plan does not include this feature. Upgrade your plan to use it.\", \"details\": {\"feature\": \"customer_export\"}}}",
+                            "name": "Plan has no customer export"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Download an export",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/exports\/:export_ulid\/download",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/exports\/:export_ulid\/download",
+                            "variable": [
+                                {
+                                    "id": "export_ulid",
+                                    "key": "export_ulid",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Streams the CSV file. Cells that start with =, +, -, or @ are prefixed with a quote, so spreadsheets do not run them as formulas."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "\"id,name,email,phone,company_name,status,created_at\\n01m3yq2mys56kee6prc9xsn2ac,\\\"Karim Store\\\",karim@store.test,'+8801700000000,\\\"Karim Ltd\\\",active,2026-10-02T16:27:37Z\"",
+                            "name": "CSV file"
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FEATURE_NOT_AVAILABLE\", \"message\": \"Your plan does not include this feature. Upgrade your plan to use it.\", \"details\": {\"feature\": \"customer_export\"}}}",
+                            "name": "Plan has no customer export"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"EXPORT_NOT_READY\", \"message\": \"The export is not ready yet.\", \"details\": {}}}",
+                            "name": "Export not completed yet"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Plans",
+            "description": "\nPublic plan list.",
+            "item": [
+                {
+                    "name": "List plans",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/plans",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/plans"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Active plans with their features, in display order. Cached. Limited to 60 requests per minute per IP.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": [{\"id\": \"01m3ypwrg7s3rw8thb4tw1226n\", \"code\": \"starter\", \"name\": \"Starter\", \"price_cents\": 1900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 5}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 500}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 120}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": false, \"limit\": null}]}, {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Subscription",
+            "description": "\nYour company subscription. There is no payment gateway; renew simulates a successful payment.",
+            "item": [
+                {
+                    "name": "Show the subscription",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/subscription",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/subscription"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Plan, status, dates, features, and usage against the plan limits. Needs subscription.view."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"active\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Change plan",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/subscription\/change-plan",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/subscription\/change-plan"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"plan_code\":\"pro\"}"
+                        },
+                        "description": "Switches between plans and keeps the status and dates. Moving to free makes the subscription active with no period. A free subscription must use renew to start a paid plan. Downgrading over a limit is allowed; new additions are blocked. Owner only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"active\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"INVALID_SUBSCRIPTION_TRANSITION\", \"message\": \"Use renew to start a paid plan.\", \"details\": {}}}",
+                            "name": "Change not allowed from the current state"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"plan_code\": [\"The selected plan code is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Renew (simulated payment)",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/subscription\/renew",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/subscription\/renew"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"plan_code\":\"pro\"}"
+                        },
+                        "description": "Payment stub. Sets the status to active with a one-month period from now, optionally on another paid plan. Works from trialing, past_due, cancelled, expired, or free. Owner only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"active\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"INVALID_SUBSCRIPTION_TRANSITION\", \"message\": \"The subscription is already active.\", \"details\": {}}}",
+                            "name": "Change not allowed from the current state"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"plan_code\": [\"The selected plan code is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cancel",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/subscription\/cancel",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/subscription\/cancel"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Access continues until the trial or period end (immediately when past_due). A free plan cannot be cancelled. Owner only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"cancelled\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": \"2026-10-03T09:00:00Z\", \"ends_at\": \"2026-11-02T16:24:25Z\", \"is_usable\": true, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 409,
+                            "body": "{\"error\": {\"code\": \"INVALID_SUBSCRIPTION_TRANSITION\", \"message\": \"A free plan cannot be cancelled.\", \"details\": {}}}",
+                            "name": "Change not allowed from the current state"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "description": "\nUsage and analytics.",
+            "item": [
+                {
+                    "name": "Company dashboard",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Subscription, usage against limits, customer counts, and a 30-day trend. trend is null when the plan lacks analytics_trends. Cached for 10 minutes and refreshed on any company data change."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"subscription\": {\"status\": \"active\", \"plan\": \"pro\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"days_left\": 31}, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}, \"customers\": {\"total\": 200, \"active\": 180, \"inactive\": 20, \"new_last_30_days\": 69}, \"trend\": [{\"date\": \"2026-09-03\", \"users\": 3, \"customers\": 156}, {\"date\": \"2026-09-04\", \"users\": 3, \"customers\": 158}]}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"TENANT_SUSPENDED\", \"message\": \"Your company account is suspended.\", \"details\": {}}}",
+                            "name": "Company suspended"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "description": "\nPlatform admin endpoints.\n\nAccess is enforced by the platform.admin middleware on the admin route group.",
+            "item": [
+                {
+                    "name": "List all plans",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/plans",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/plans"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only. Includes inactive plans."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": [{\"id\": \"01m3ypwrg7s3rw8thb4tw1226n\", \"code\": \"starter\", \"name\": \"Starter\", \"price_cents\": 1900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 5}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 500}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 120}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": false, \"limit\": null}]}, {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Create a plan",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/plans",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/plans"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"code\":\"business\",\"name\":\"Business\",\"price_cents\":9900,\"currency\":\"USD\",\"is_active\":true,\"sort_order\":4,\"features\":[{\"key\":\"max_users\",\"enabled\":true,\"limit\":50},{\"key\":\"customer_export\",\"enabled\":true,\"limit\":null}]}"
+                        },
+                        "description": "Platform admin only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"data\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"business\", \"name\": \"Business\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"code\": [\"The code has already been taken.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update a plan",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/plans\/:plan_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/plans\/:plan_ulid",
+                            "variable": [
+                                {
+                                    "id": "plan_ulid",
+                                    "key": "plan_ulid",
+                                    "value": "01m3yqq1kshr2g2mbf7r4ne31c",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Business\",\"price_cents\":9900,\"currency\":\"USD\",\"is_active\":true,\"sort_order\":4,\"features\":[{\"key\":\"max_users\",\"enabled\":true,\"limit\":50},{\"key\":\"customer_export\",\"enabled\":true,\"limit\":null}]}"
+                        },
+                        "description": "Platform admin only. All fields optional; code cannot change. features, when sent, replaces all feature rows. Every company on the plan sees new limits on its next request."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"code\": [\"The code field is prohibited.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "List companies",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/tenants",
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number, from 1. Must be at least 1. Must not be greater than 1000000.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15",
+                                    "description": "Items per page, 1 to 100. Default 15. Must be at least 1. Must not be greater than 100.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "name",
+                                    "description": "-created_at (default) or name.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter[]",
+                                    "value": "",
+                                    "description": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter.status",
+                                    "value": "active",
+                                    "description": "active or suspended.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.plan",
+                                    "value": "pro",
+                                    "description": "A plan code. Must match an existing stored value.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filter.search",
+                                    "value": "Acme",
+                                    "description": "Prefix match on company name. Must not be greater than 100 characters.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/tenants?page=1&per_page=15&sort=name&filter%5B%5D=&filter.status=active&filter.plan=pro&filter.search=Acme"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only. Each company comes with its subscription and plan."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": [{\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\", \"subscription\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"active\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true}}], \"links\": {\"first\": \"http:\/\/localhost:8000\/api\/v1\/admin\/tenants?page=1\", \"last\": \"http:\/\/localhost:8000\/api\/v1\/admin\/tenants?page=14\", \"prev\": null, \"next\": \"http:\/\/localhost:8000\/api\/v1\/admin\/tenants?page=2\"}, \"meta\": {\"current_page\": 1, \"from\": 1, \"last_page\": 14, \"path\": \"http:\/\/localhost:8000\/api\/v1\/admin\/tenants\", \"per_page\": 15, \"to\": 15, \"total\": 200}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"error\": {\"code\": \"VALIDATION_FAILED\", \"message\": \"The given data was invalid.\", \"details\": {\"filter.plan\": [\"The selected filter.plan is invalid.\"]}}}",
+                            "name": "Validation failed"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Show a company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/tenants\/:tenant_ulid",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/tenants\/:tenant_ulid",
+                            "variable": [
+                                {
+                                    "id": "tenant_ulid",
+                                    "key": "tenant_ulid",
+                                    "value": "01m3yqq28g3sa8stzv3t2bjndy",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only. Includes the subscription and usage counts."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\", \"subscription\": {\"id\": \"01m3ypws7te03dc3frgev51ras\", \"status\": \"active\", \"plan\": {\"id\": \"01m3ypwrhqvabc00wv89eb5qez\", \"code\": \"pro\", \"name\": \"Pro\", \"price_cents\": 4900, \"currency\": \"USD\", \"features\": [{\"key\": \"max_users\", \"enabled\": true, \"limit\": 25}, {\"key\": \"max_customers\", \"enabled\": true, \"limit\": 5000}, {\"key\": \"api_rate_per_minute\", \"enabled\": true, \"limit\": 600}, {\"key\": \"customer_export\", \"enabled\": true, \"limit\": null}, {\"key\": \"analytics_trends\", \"enabled\": true, \"limit\": null}]}, \"trial_ends_at\": null, \"current_period_start\": \"2026-10-02T16:24:25Z\", \"current_period_end\": \"2026-11-02T16:24:25Z\", \"cancelled_at\": null, \"ends_at\": null, \"is_usable\": true}, \"usage\": {\"users\": {\"used\": 3, \"limit\": 25, \"over_limit\": false}, \"customers\": {\"used\": 200, \"limit\": 5000, \"over_limit\": false}}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Suspend a company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/tenants\/:tenant_ulid\/suspend",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/tenants\/:tenant_ulid\/suspend",
+                            "variable": [
+                                {
+                                    "id": "tenant_ulid",
+                                    "key": "tenant_ulid",
+                                    "value": "01m3yqq28g3sa8stzv3t2bjndy",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only. Deletes every token of the company users: their next request gets 401 and login gets 403 TENANT_SUSPENDED."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"suspended\", \"created_at\": \"2026-10-02T16:24:25Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Reactivate a company",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/tenants\/:tenant_ulid\/reactivate",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/tenants\/:tenant_ulid\/reactivate",
+                            "variable": [
+                                {
+                                    "id": "tenant_ulid",
+                                    "key": "tenant_ulid",
+                                    "value": "01m3yqq28g3sa8stzv3t2bjndy",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"id\": \"01m3ypws0r7ercmyaecr9y5a12\", \"name\": \"Acme Ltd\", \"status\": \"active\", \"created_at\": \"2026-10-02T16:24:25Z\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\"error\": {\"code\": \"NOT_FOUND\", \"message\": \"The requested resource was not found.\", \"details\": {}}}",
+                            "name": "Not found or belongs to another company"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                },
+                {
+                    "name": "Platform dashboard",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/dashboard",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/dashboard"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Platform admin only. MRR counts active and past_due subscriptions on paid plans. Churn counts cancelled and expired events in the last 30 days. Cached for 5 minutes."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"data\": {\"tenants\": {\"total\": 3, \"active\": 3, \"suspended\": 0, \"new_last_30_days\": 3}, \"subscriptions_by_status\": {\"trialing\": 1, \"active\": 2, \"past_due\": 0, \"cancelled\": 0, \"expired\": 0}, \"subscriptions_by_plan\": {\"free\": 1, \"starter\": 1, \"pro\": 1}, \"mrr_cents\": 4900, \"churned_last_30_days\": 0}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"error\": {\"code\": \"UNAUTHENTICATED\", \"message\": \"Unauthenticated.\", \"details\": {}}}",
+                            "name": "Missing, invalid, or expired token"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"error\": {\"code\": \"FORBIDDEN\", \"message\": \"This action is unauthorized.\", \"details\": {}}}",
+                            "name": "No permission, or wrong user type for this route"
+                        },
+                        {
+                            "header": [],
+                            "code": 429,
+                            "body": "{\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please slow down.\", \"details\": {}}}",
+                            "name": "Rate limit hit (Retry-After header is set)"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "Authorization",
+                "type": "string"
+            }
+        ]
+    }
+}
